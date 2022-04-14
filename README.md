@@ -1,0 +1,2 @@
+# dnscan
+A dnscan tool
