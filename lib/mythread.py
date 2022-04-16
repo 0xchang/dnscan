@@ -1,3 +1,5 @@
+import time
+from tqdm import tqdm
 import queue
 import threading
 import signal
@@ -6,12 +8,15 @@ import sys
 
 thread_flag = True
 Lock=threading.Lock()
+count=0
 
 class File_to_queue(threading.Thread):
+    '''将文件中的字典存入到相应的队列中'''
     def __init__(self, que, file_name: str = 'dic.txt'):
         super().__init__()
         self.queue = que
         self.file_name = file_name
+
 
     def run(self) -> None:
         for string in open(self.file_name, 'r'):
@@ -21,6 +26,7 @@ class File_to_queue(threading.Thread):
 
 
 class Queue_to_req(threading.Thread):
+    '''将队列中的数据取出，并提交给connect进行处理'''
     def __init__(self, que,rque,domain,port,save):
         super().__init__()
         self.domain=domain
@@ -29,9 +35,15 @@ class Queue_to_req(threading.Thread):
         self.save=save
         self.rque=rque
 
+
     def run(self) -> None:
         global thread_flag
+        global count
+        global Lock
         while thread_flag or not self.queue.empty():
+            Lock.acquire()
+            count+=1
+            Lock.release()
             dns_child = self.queue.get().replace('\n', '').replace(' ', '')
             if dns_child == '':
                 continue
@@ -44,12 +56,13 @@ class Queue_to_req(threading.Thread):
                 if self.result is None:
                     continue
                 self.rque.put(self.result+'\n')
-                global Lock
                 Lock.acquire()
-                print(self.result)
+                tqdm.write(self.result)
                 Lock.release()
 
+
 class Queue_to_file(threading.Thread):
+    '''将队列中的数据存入文件'''
     def __init__(self,que,path):
         super().__init__()
         self.que=que
@@ -59,10 +72,45 @@ class Queue_to_file(threading.Thread):
             with open(self.path,'a+') as f:
                 f.write(self.que.get())
 
+class Progress_bar(threading.Thread):
+    '''创建一个进度条的线程'''
+    def __init__(self,file_name):
+        super().__init__()
+        self.file_name=file_name
+        self.flag=False
+    def run(self) -> None:
+        self.allcount=0
+        global count
+        for f in open(self.file_name):
+            self.allcount+=1
+        with tqdm(total=self.allcount) as pbar:
+            self.count1=0
+            while True:
+                time.sleep(0.5)
+                Lock.acquire()
+                self.count2=count
+                pbar.update(self.count2-self.count1)
+                Lock.release()
+                self.count1 = self.count2
+                if self.count1>=self.allcount:
+                    time.sleep(1)
+                    break
+        self.flag=True
+    def getFlag(self):
+        return self.flag
+
+
+
+def file_count_line(file_name):
+    f=open(file_name,'r')
+    fcount=0
+    for i in f:
+        fcount+=1
+    return fcount
 
 
 def quit(signum, frame):
-    print('\nExting!')
+    tqdm.write('\nExting!')
     sys.exit(0)
 
 

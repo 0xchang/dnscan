@@ -59,4 +59,4 @@ if __name__=='__main__':
     a=Requester('www.baidu.com',[80,443])
     a.dns_run()
     a.request_run()
-    print(a.get_result())
+    a.get_result()

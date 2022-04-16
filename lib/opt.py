@@ -53,6 +53,8 @@ class Option(object):
         else:
             sys.exit('The wordlist is not a file!')
     def getOutput(self):
+        f=open(self.output,'w')
+        f.close()
         return self.output
 
 
