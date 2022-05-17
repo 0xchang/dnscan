@@ -16,7 +16,7 @@ A dnscan tool
 
 #### Installation
 
-python dnscan.py -h
+pip install -r requirements.txt
 
 #### Instructions
 
