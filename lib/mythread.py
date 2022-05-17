@@ -55,9 +55,9 @@ class Queue_to_req(threading.Thread):
                 self.result=self.run_connects.get_result()
                 if self.result is None:
                     continue
-                self.rque.put(self.result+'\n')
+                self.rque.put(self.result)
                 Lock.acquire()
-                tqdm.write(self.result)
+                tqdm.write(str(self.result))
                 Lock.release()
 
 
@@ -70,7 +70,10 @@ class Queue_to_file(threading.Thread):
     def run(self) -> None:
         while thread_flag or not self.que.empty():
             with open(self.path,'a+') as f:
-                f.write(self.que.get())
+                infos=self.que.get()
+                for info in infos:
+                    f.write(str(info).replace(',','  ')+',')
+                f.write('\n')
 
 class Progress_bar(threading.Thread):
     '''创建一个进度条的线程'''

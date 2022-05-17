@@ -14,6 +14,7 @@ class Requester(object):
         self.cdn=False
         self.UA=random.choice(USER_AGENTS)
         self.port_true=[]
+        self.result=[]
     def dns_run(self):
         try:
             self.ip=resolver.resolve(self.domain,'A')
@@ -41,15 +42,15 @@ class Requester(object):
     def get_result(self):
         if self.ip_true:
             ips=[]
-            result='{: <30}'.format(self.domain)+'(have {} cdn)'.format('   ' if self.cdn else 'not')
+            self.result.append(self.domain)
+            self.result.append(self.cdn)
             for ip in self.ip:
                 ips.append(str(ip))
-            result+=' '*3+str(ips)
-            result+=' '*3
+            self.result.append(ips)
             if self.port_true!=[]:
                 for port in self.port_true:
-                    result+='(port:'+str(port[0])+',status:'+str(port[1])+') '
-            return result
+                    self.result.append({'port':port[0],'status':port[1]})
+            return self.result
         else:
             return None
 

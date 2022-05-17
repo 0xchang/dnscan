@@ -53,7 +53,10 @@ class Option(object):
         else:
             sys.exit('The wordlist is not a file!')
     def getOutput(self):
+        if self.output is None:
+            self.output=self.domain+'.csv'
         f=open(self.output,'w')
+        f.write('域名,是否有cdn,IP地址,开放端口   状态码\n')
         f.close()
         return self.output
 

@@ -7,7 +7,6 @@
 import queue
 import time
 
-import tqdm
 
 from lib.opt import get_opt
 from lib.opt import Option
