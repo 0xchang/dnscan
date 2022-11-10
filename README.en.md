@@ -22,6 +22,9 @@ pip install -r requirements.txt
 
 python dnscan.py -h
 
+#### update 2022-11-10
+Fix the security vulnerability of eval function when using the p parameter.
+
 #### Contribution
 
 1.  Fork the repository

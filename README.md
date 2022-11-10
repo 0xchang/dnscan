@@ -23,6 +23,10 @@ pip install -r requirements.txt
 
 python dnscan.py -h
 
+#### 更新 2022-11-10
+修补使用p参数时使用eval函数存在的安全漏洞。
+
+
 #### 参与贡献
 
 1.  Fork 本仓库
