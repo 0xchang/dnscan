@@ -5,29 +5,25 @@ import os
 class Port(object):
     #将port字符串转为生成器
     def __init__(self,port:str):
-        self.flag=False
-        if '-' in port:
-            start, stop = port.split('-')
-            self.flag=True
-        elif ',' in port:
-            self.ports = eval(port)
-        elif port.isdigit():
-            self.ports = (port,)
-        else:
-            print('Your ports have wrong!')
-            sys.exit(1)
-        if self.flag:
-            self.start=int(start,10)
-            self.stop=int(stop,10)
+        port=port.split(',')
+        self.ports=[]
+        for p in port:
+            p=p.strip()
+            if p=='':
+                continue
+            if p.isdigit():
+                self.ports.append(int(p))
+            elif '-' in p:
+                p=p.split('-')
+                if p[0].isdigit() and p[1].isdigit():
+                    s,e=int(p[0]),int(p[1])
+                    for i in range(s,e+1):
+                        self.ports.append(i)
+        self.ports=set(self.ports)
 
     def getPorts(self):
-        if self.flag:
-            for i in range(self.start, self.stop +1 ):
-                yield self.start
-                self.start += 1
-        else:
-            for port in self.ports:
-                yield port
+        for port in self.ports:
+            yield port
 
 class Option(object):
     #参数处理
@@ -77,4 +73,5 @@ if __name__ == '__main__':
     wordlist=opts.wordlist
     thread=opts.thread
     output=opts.output
-
+    for port in ports:
+        print(port)
